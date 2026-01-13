@@ -21,6 +21,13 @@ const STATUS_MESSAGES = [
   "Barrierestress berechnet",
 ];
 
+const PRODUCT_IMAGE_MAP = [
+  { match: ["cleanser", "reinigung"], src: "./images/cleanser.webp" },
+  { match: ["serum", "niacinamid", "panthenol", "hydrating"], src: "./images/hydrating-serum.webp" },
+  { match: ["creme", "cream", "barrier", "ceramide", "lotion", "pflege"], src: "./images/barrier-creme.webp" },
+  { match: ["spf", "sonnenschutz", "uv"], src: "./images/spf-50-fluid.webp" },
+];
+
 const PROFILES = [
   {
     id: "trocken",
@@ -227,6 +234,14 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function getProductImageSrc(productName) {
+  const name = String(productName || "").toLowerCase();
+  for (const { match, src } of PRODUCT_IMAGE_MAP) {
+    if (match.some((key) => name.includes(key))) return src;
+  }
+  return null;
 }
 
 function computeCoverTransform(videoW, videoH, screenW, screenH) {
@@ -971,11 +986,18 @@ function renderResults(profile) {
 
   dom.products.innerHTML = "";
   profile.products.forEach((product, index) => {
+    const imgSrc = getProductImageSrc(product.name);
     const card = document.createElement("div");
     card.className = "product";
     card.style.setProperty("--i", String(index));
     card.innerHTML = `
-      <div class="product-icon" aria-hidden="true"></div>
+      <div class="product-icon" aria-hidden="true">
+        ${
+          imgSrc
+            ? `<img class="product-icon-img" src="${imgSrc}" alt="" loading="lazy" decoding="async" />`
+            : ""
+        }
+      </div>
       <div>
         <div class="product-name">${escapeHtml(product.name)}</div>
         <div class="product-why">${escapeHtml(product.why)}</div>
