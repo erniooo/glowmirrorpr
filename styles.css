@@ -376,47 +376,6 @@ body {
   margin-top: 4px;
 }
 
-.score-ring {
-  --p: 0;
-  width: 112px;
-  height: 112px;
-  border-radius: 999px;
-  padding: 10px;
-  background: conic-gradient(
-    from -90deg,
-    rgba(217, 165, 123, 0.95) calc(var(--p) * 1%),
-    rgba(25, 18, 13, 0.12) 0
-  );
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
-}
-
-.score-ring-inner {
-  width: 100%;
-  height: 100%;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(25, 18, 13, 0.08);
-  display: grid;
-  place-items: center;
-  text-align: center;
-}
-
-.score-ring-value {
-  font-weight: 800;
-  font-size: 28px;
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
-
-.score-ring-label {
-  margin-top: 2px;
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(25, 18, 13, 0.52);
-  font-weight: 700;
-}
-
 .results-tags {
   display: flex;
   flex-wrap: wrap;
@@ -518,26 +477,8 @@ body {
   }
 }
 
-@keyframes ringPop {
-  0% {
-    opacity: 0;
-    transform: scale(0.92);
-    filter: blur(10px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0);
-  }
-}
-
 .results-full.is-entering .results-hero {
   animation: riseIn 760ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-.results-full.is-entering .score-ring {
-  animation: ringPop 860ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  animation-delay: 120ms;
 }
 
 .results-full.is-entering .results-section {

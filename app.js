@@ -7,7 +7,7 @@ const SCREENS = {
   ERROR: "error",
 };
 
-const ANALYSIS_DURATION_MS = 9000;
+const ANALYSIS_DURATION_MS = 18000;
 const STATUS_MESSAGES = [
   "Scanne Hautprofil",
   "Vergleiche mit Datenbank",
@@ -181,8 +181,6 @@ const dom = {
   profileSubtitle: document.getElementById("profileSubtitle"),
   profileFocus: document.getElementById("profileFocus"),
   scanId: document.getElementById("scanId"),
-  glowScoreRing: document.getElementById("glowScoreRing"),
-  glowScoreValue: document.getElementById("glowScoreValue"),
   resultsTags: document.getElementById("resultsTags"),
   scores: document.getElementById("scores"),
   analysisSteps: document.getElementById("analysisSteps"),
@@ -859,24 +857,6 @@ function buildTags(profile) {
   return unique.slice(0, 4);
 }
 
-function easeOutCubic(t) {
-  return 1 - (1 - t) ** 3;
-}
-
-function animateValue(from, to, durationMs, onUpdate) {
-  const start = performance.now();
-
-  const frame = (now) => {
-    const t = Math.min(1, (now - start) / durationMs);
-    const eased = easeOutCubic(t);
-    const value = from + (to - from) * eased;
-    onUpdate(value);
-    if (t < 1) requestAnimationFrame(frame);
-  };
-
-  requestAnimationFrame(frame);
-}
-
 function triggerResultsEntrance() {
   const root = document.querySelector('[data-screen="results"] .results-full');
   if (!root) return;
@@ -920,20 +900,6 @@ function renderResults(profile) {
   const focus = parseFocus(profile.subtitle);
   dom.profileFocus.textContent = focus;
   dom.scanId.textContent = `GM-${String(Date.now()).slice(-4)}`;
-
-  if (dom.glowScoreRing && dom.glowScoreValue) {
-    const avg =
-      profile.scores.reduce((sum, score) => sum + (Number(score.value) || 0), 0) /
-      Math.max(1, profile.scores.length);
-    const target = Math.round(avg);
-    dom.glowScoreRing.style.setProperty("--p", "0");
-    dom.glowScoreRing.setAttribute("aria-label", `Glow Score ${target}%`);
-    dom.glowScoreValue.textContent = "0";
-    animateValue(0, target, 920, (value) => {
-      dom.glowScoreRing.style.setProperty("--p", value.toFixed(1));
-      dom.glowScoreValue.textContent = String(Math.round(value));
-    });
-  }
 
   if (dom.resultsTags) {
     dom.resultsTags.innerHTML = "";
