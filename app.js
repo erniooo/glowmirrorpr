@@ -170,6 +170,7 @@ const dom = {
   progressLabel: document.getElementById("progressLabel"),
   scanHint: document.getElementById("scanHint"),
   scanStatus: document.getElementById("scanStatus"),
+  scanHud: document.querySelector(".scan-hud"),
   profileSubtitle: document.getElementById("profileSubtitle"),
   profileFocus: document.getElementById("profileFocus"),
   scanId: document.getElementById("scanId"),
@@ -678,13 +679,27 @@ function updateStatusBubbles(nowMs) {
   dom.scanStatus.style.setProperty("--cx", `${state.smoothedCenter.x}px`);
   dom.scanStatus.style.setProperty("--cy", `${state.smoothedCenter.y}px`);
 
+  const hudRect = dom.scanHud?.getBoundingClientRect?.();
+  const hudW = Math.max(320, Math.min(520, hudRect?.width || 520));
+  const hudH = Math.max(120, Math.min(260, hudRect?.height || 170));
+  const pad = 18;
+
   const desiredHudX = state.smoothedCenter.x;
-  const offsetY = Math.max(54, state.smoothedRadius * 0.62);
-  const desiredHudY = state.smoothedCenter.y + offsetY;
-  const minHudY = 110;
-  const maxHudY = window.innerHeight - 120;
-  const clampedHudY = Math.max(minHudY, Math.min(maxHudY, desiredHudY));
-  const clampedHudX = Math.max(140, Math.min(window.innerWidth - 140, desiredHudX));
+  const offsetY = Math.max(46, state.smoothedRadius * 0.48);
+  const desiredBelowY = state.smoothedCenter.y + offsetY;
+  const desiredAboveY = state.smoothedCenter.y - offsetY;
+
+  const minHudX = hudW / 2 + pad;
+  const maxHudX = window.innerWidth - hudW / 2 - pad;
+  const clampedHudX = Math.max(minHudX, Math.min(maxHudX, desiredHudX));
+
+  const minHudY = hudH / 2 + pad;
+  const maxHudY = window.innerHeight - hudH / 2 - pad;
+
+  const fitsBelow = desiredBelowY <= maxHudY;
+  const candidateY = fitsBelow ? desiredBelowY : desiredAboveY;
+  const clampedHudY = Math.max(minHudY, Math.min(maxHudY, candidateY));
+
   dom.app.style.setProperty("--hud-x", `${clampedHudX}px`);
   dom.app.style.setProperty("--hud-y", `${clampedHudY}px`);
 
