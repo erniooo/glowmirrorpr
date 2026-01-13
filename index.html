@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GlowMirror – Prototyp</title>
+    <link rel="stylesheet" href="./styles.css" />
+
+    <!-- MediaPipe (Face Landmarks) -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1675466124/drawing_utils.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <div class="app" id="app">
+      <video
+        class="camera"
+        id="camera"
+        autoplay
+        playsinline
+        muted
+      ></video>
+      <canvas class="fx" id="fx"></canvas>
+
+      <div class="ui" id="ui">
+        <header class="topbar">
+          <div class="brand" aria-label="GlowMirror">
+            <div class="brand-mark" aria-hidden="true"></div>
+            <div class="brand-text">
+              <div class="brand-name">GlowMirror</div>
+              <div class="brand-tagline">Smart Skin Check • Demo</div>
+            </div>
+          </div>
+
+          <div class="topbar-actions">
+            <button class="chip" id="btnFullscreen" type="button">
+              Vollbild
+            </button>
+            <div class="chip chip--status" id="statusChip">Bereit</div>
+          </div>
+        </header>
+
+        <main class="stage">
+          <section class="screen" data-screen="welcome">
+            <div class="panel">
+              <h1>Dein Skin-Check in 20 Sekunden</h1>
+              <p class="muted">
+                Dieser Prototyp zeigt ein mögliches Kiosk-Erlebnis. Es werden
+                keine Bilder gespeichert. Keine medizinische Beratung.
+              </p>
+
+              <div class="button-row">
+                <button
+                  class="btn btn--primary"
+                  id="btnStartCamera"
+                  type="button"
+                >
+                  Hautanalyse starten
+                </button>
+                <button class="btn" id="btnStartDemo" type="button">
+                  Demo (ohne Kamera)
+                </button>
+              </div>
+
+              <div class="fineprint">
+                Tipp: Für den “Wow”-Effekt Kamera erlauben – dann wird ein
+                Live-Face-Scan angezeigt.
+              </div>
+            </div>
+          </section>
+
+          <section class="screen is-hidden" data-screen="scanning">
+            <div class="panel panel--scan">
+              <div class="scan-title">Gesichtserkennung läuft</div>
+              <div class="scan-subtitle" id="scanHint">
+                Bitte schau in die Kamera und halte dein Gesicht im Sichtfeld.
+              </div>
+
+              <div class="scan-steps" aria-label="Scan Schritte">
+                <div class="step" data-step="kinn">
+                  <div class="step-icon" aria-hidden="true"></div>
+                  <div class="step-label">Kinn</div>
+                </div>
+                <div class="step" data-step="wangen">
+                  <div class="step-icon" aria-hidden="true"></div>
+                  <div class="step-label">Wangen</div>
+                </div>
+                <div class="step" data-step="stirn">
+                  <div class="step-icon" aria-hidden="true"></div>
+                  <div class="step-label">Stirn</div>
+                </div>
+              </div>
+
+              <div class="progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-meta">
+                  <div id="progressLabel">0%</div>
+                  <button class="link" id="btnCancel" type="button">
+                    Analyse abbrechen
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="screen is-hidden" data-screen="results">
+            <div class="panel panel--results">
+              <div class="results-header">
+                <div>
+                  <div class="results-title">Dein Hautprofil</div>
+                  <div class="results-subtitle" id="profileSubtitle"></div>
+                </div>
+                <button class="btn btn--small" id="btnRescan" type="button">
+                  Neu scannen
+                </button>
+              </div>
+
+              <nav class="tabs" aria-label="Ergebnis Tabs">
+                <button class="tab is-active" data-tab="routine" type="button">
+                  Routine
+                </button>
+                <button class="tab" data-tab="tips" type="button">Tipps</button>
+                <button class="tab" data-tab="produkte" type="button">
+                  Produkte
+                </button>
+              </nav>
+
+              <div class="tabpanes">
+                <section class="tabpane is-active" data-pane="routine">
+                  <div class="split">
+                    <div class="card">
+                      <div class="card-title">Morgens</div>
+                      <ol class="list" id="routineMorning"></ol>
+                    </div>
+                    <div class="card">
+                      <div class="card-title">Abends</div>
+                      <ol class="list" id="routineEvening"></ol>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="tabpane" data-pane="tips">
+                  <div class="card">
+                    <div class="card-title">Deine wichtigsten Hinweise</div>
+                    <ul class="bullets" id="tipsList"></ul>
+                  </div>
+                  <div class="card">
+                    <div class="card-title">Skin-Scores (Demo)</div>
+                    <div class="scores" id="scores"></div>
+                  </div>
+                </section>
+
+                <section class="tabpane" data-pane="produkte">
+                  <div class="card">
+                    <div class="card-title">Empfehlungen (B2B)</div>
+                    <div class="muted">
+                      Beispielkarten – in der Praxis abhängig vom Sortiment des
+                      Standorts (z. B. dm / Douglas).
+                    </div>
+                  </div>
+                  <div class="products" id="products"></div>
+                  <div class="cta">
+                    <div class="cta-copy">
+                      Ergebnisse mitnehmen?
+                      <div class="muted">
+                        QR-Code (Demo) würde Routine & Produkte aufs Handy
+                        senden.
+                      </div>
+                    </div>
+                    <div class="qr" aria-label="QR Code Platzhalter"></div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </section>
+
+          <section class="screen is-hidden" data-screen="error">
+            <div class="panel">
+              <h1>Kamera nicht verfügbar</h1>
+              <p class="muted" id="errorMessage">
+                Bitte erlaube den Zugriff auf die Kamera oder starte den Demo
+                Modus.
+              </p>
+              <div class="button-row">
+                <button
+                  class="btn btn--primary"
+                  id="btnRetryCamera"
+                  type="button"
+                >
+                  Kamera erneut versuchen
+                </button>
+                <button class="btn" id="btnFallbackDemo" type="button">
+                  Demo (ohne Kamera)
+                </button>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <footer class="footer">
+          <div class="footer-pill">
+            Datenschutz: Live-Ansicht • keine Speicherung • kein Upload
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
+
