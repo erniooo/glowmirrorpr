@@ -17,3 +17,6 @@ UI-Konzept fuer einen Smart Mirror Skin-Check: Live-Kameraansicht, Scan-Overlay 
 - `app.js`
 - `images/`
 - `GlowMirror - Marketing.pdf`
+
+Last deploy trigger: 2026-01-13 19:22:05
+
