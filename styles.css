@@ -252,7 +252,7 @@ body {
   position: absolute;
   left: var(--hud-x, 50%);
   top: var(--hud-y, 72%);
-  transform: translate(-50%, 0);
+  transform: translate(-50%, -50%);
   text-align: center;
   width: min(520px, 90vw);
   color: rgba(255, 255, 255, 0.85);

@@ -679,11 +679,12 @@ function updateStatusBubbles(nowMs) {
   dom.scanStatus.style.setProperty("--cy", `${state.smoothedCenter.y}px`);
 
   const desiredHudX = state.smoothedCenter.x;
-  const desiredHudY = state.smoothedCenter.y + state.smoothedRadius * 1.18;
+  const offsetY = Math.max(54, state.smoothedRadius * 0.62);
+  const desiredHudY = state.smoothedCenter.y + offsetY;
   const minHudY = 110;
-  const maxHudY = window.innerHeight - 170;
+  const maxHudY = window.innerHeight - 120;
   const clampedHudY = Math.max(minHudY, Math.min(maxHudY, desiredHudY));
-  const clampedHudX = Math.max(120, Math.min(window.innerWidth - 120, desiredHudX));
+  const clampedHudX = Math.max(140, Math.min(window.innerWidth - 140, desiredHudX));
   dom.app.style.setProperty("--hud-x", `${clampedHudX}px`);
   dom.app.style.setProperty("--hud-y", `${clampedHudY}px`);
 
