@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GlowMirror - Prototyp</title>
+    <title>GlowMirror</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -73,8 +73,8 @@
               </div>
               <h1 class="font-serif text-4xl md:text-5xl">Dein Skin-Check in 20 Sekunden</h1>
               <p class="mt-4 text-ink/60">
-                Dieser Prototyp zeigt ein m&ouml;gliches Kiosk-Erlebnis. Es werden keine Bilder
-                gespeichert. Keine medizinische Beratung.
+                GlowMirror bietet ein m&ouml;gliches Kiosk-Erlebnis f&uuml;r einen schnellen
+                Skin-Check. Es werden keine Bilder gespeichert. Keine medizinische Beratung.
               </p>
               <div class="mt-8 flex flex-wrap gap-3">
                 <button
@@ -86,10 +86,10 @@
                 </button>
                 <button
                   class="rounded-full border border-ink/20 bg-white/70 px-6 py-3 text-sm font-semibold text-ink"
-                  id="btnStartDemo"
+                  id="btnStartNoCamera"
                   type="button"
                 >
-                  Demo (ohne Kamera)
+                  Ohne Kamera starten
                 </button>
               </div>
               <div class="mt-6 text-xs text-ink/50">
@@ -179,18 +179,18 @@
                 <section class="results-section">
                   <div class="section-title">Produktempfehlungen</div>
                   <div class="text-sm text-ink/60">
-                    Beispielkarten &ndash; abh&auml;ngig vom Sortiment des Standorts (z. B. dm /
-                    Douglas).
+                    Ausgew&auml;hlt f&uuml;r dein Profil &ndash; basierend auf Hautzustand und
+                    Routine-Zielen.
                   </div>
                   <div class="products" id="products"></div>
                   <div class="cta">
                     <div class="cta-copy">
                       Ergebnisse mitnehmen?
                       <div class="text-sm text-ink/60">
-                        QR-Code (Demo) w&uuml;rde Routine &amp; Produkte aufs Handy senden.
+                        QR-Code sendet Routine &amp; Produkte aufs Handy.
                       </div>
                     </div>
-                    <div class="qr" aria-label="QR Code Platzhalter"></div>
+                    <div class="qr" aria-label="QR Code"></div>
                   </div>
                 </section>
               </div>
@@ -203,7 +203,7 @@
             >
               <h1 class="font-serif text-3xl">Kamera nicht verf&uuml;gbar</h1>
               <p class="mt-4 text-ink/60" id="errorMessage">
-                Bitte erlaube den Zugriff auf die Kamera oder starte den Demo Modus.
+                Bitte erlaube den Zugriff auf die Kamera oder starte ohne Kamera.
               </p>
               <div class="mt-6 flex flex-wrap gap-3">
                 <button
@@ -215,10 +215,10 @@
                 </button>
                 <button
                   class="rounded-full border border-ink/20 bg-white/70 px-6 py-3 text-sm font-semibold text-ink"
-                  id="btnFallbackDemo"
+                  id="btnFallbackNoCamera"
                   type="button"
                 >
-                  Demo (ohne Kamera)
+                  Ohne Kamera starten
                 </button>
               </div>
             </div>

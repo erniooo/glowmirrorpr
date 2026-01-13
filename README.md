@@ -1,25 +1,19 @@
-# GlowMirror Prototype (Uni-Demo)
+﻿# GlowMirror
 
-Kleiner, **hardcodierter** Design‑Prototyp als Web‑App (Deutsch) mit Kamera‑Mirror‑View, Scan‑Overlay und **Face‑Landmarks (MediaPipe FaceMesh)**.
+UI-Konzept fuer einen Smart Mirror Skin-Check: Live-Kameraansicht, Scan-Overlay (FaceMesh) und Ergebnis-Report.
 
-## Start
+## GitHub Pages
 
-1. Terminal öffnen im Repo:
-   - `cd prototype`
-2. Lokalen Server starten:
-   - `python -m http.server 5173`
-3. Im Browser öffnen:
-   - `http://localhost:5173`
+- https://erniooo.github.io/glowmirrorpr/
 
-## Demo-Flow
+## Lokal
 
-- **Hautanalyse starten**: nutzt die Laptop‑Kamera + Face‑Landmarks Overlay.
-- **Demo (ohne Kamera)**: gleicher Ablauf ohne Kamera (falls Berechtigungen/WLAN zicken).
-
-Hinweis: Die Face‑Landmarks werden über MediaPipe‑Dateien von `cdn.jsdelivr.net` geladen (Internet nötig). Ohne Internet funktioniert der Demo‑Modus weiterhin.
+- Starte einen Static Server im Repo-Root und oeffne die URL in deinem Browser.
 
 ## Dateien
 
-- `prototype/index.html`
-- `prototype/styles.css`
-- `prototype/app.js`
+- `index.html`
+- `styles.css`
+- `app.js`
+- `images/`
+- `GlowMirror - Marketing.pdf`

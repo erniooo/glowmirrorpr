@@ -52,22 +52,22 @@ const PROFILES = [
       {
         name: "Milder Cleanser (parfumfrei)",
         why: "Reinigt ohne die Hautbarriere zu stressen.",
-        meta: "dm / Douglas",
+        meta: "Reinigung",
       },
       {
         name: "Hydrating Serum (Hyaluron + Glycerin)",
         why: "Bindet Wasser, sorgt fuer pralleren Look.",
-        meta: "dm",
+        meta: "Serum",
       },
       {
         name: "Barrier-Creme (Ceramide)",
         why: "Unterstuetzt die Schutzbarriere ueber Nacht.",
-        meta: "Douglas",
+        meta: "Pflege",
       },
       {
         name: "SPF 50 Fluid",
         why: "Schuetzt vor Photoaging & Irritationen.",
-        meta: "dm / Douglas",
+        meta: "Schutz",
       },
     ],
   },
@@ -94,22 +94,22 @@ const PROFILES = [
       {
         name: "Gel-Cleanser",
         why: "Entfernt ueberschuessigen Talg ohne Reizung.",
-        meta: "dm / Douglas",
+        meta: "Reinigung",
       },
       {
         name: "Niacinamid Serum",
         why: "Wirkt ausgleichend, unterstuetzt Porenbild.",
-        meta: "dm",
+        meta: "Serum",
       },
       {
         name: "BHA Toner (2%)",
         why: "Hilft bei verstopften Poren (langsam steigern).",
-        meta: "Douglas",
+        meta: "Wirkstoff",
       },
       {
         name: "SPF 50 Gel-Fluid",
         why: "Mattes Finish, taeglicher Schutz.",
-        meta: "dm / Douglas",
+        meta: "Schutz",
       },
     ],
   },
@@ -141,22 +141,22 @@ const PROFILES = [
       {
         name: "Sehr milder Cleanser (sensitiv)",
         why: "Reduziert Reizpotenzial.",
-        meta: "dm",
+        meta: "Reinigung",
       },
       {
         name: "Beruhigendes Serum (Panthenol)",
         why: "Beruhigt, unterstuetzt Regeneration.",
-        meta: "Douglas",
+        meta: "Serum",
       },
       {
         name: "Creme (parfumfrei)",
         why: "Okklusiv ohne viele Extras.",
-        meta: "dm / Douglas",
+        meta: "Pflege",
       },
       {
         name: "SPF 50 (sensitiv)",
         why: "Schutz, oft besser vertraeglich.",
-        meta: "dm / Douglas",
+        meta: "Schutz",
       },
     ],
   },
@@ -167,11 +167,11 @@ const dom = {
   video: document.getElementById("camera"),
   fx: document.getElementById("fx"),
   btnStartCamera: document.getElementById("btnStartCamera"),
-  btnStartDemo: document.getElementById("btnStartDemo"),
+  btnStartNoCamera: document.getElementById("btnStartNoCamera"),
   btnCancel: document.getElementById("btnCancel"),
   btnRescan: document.getElementById("btnRescan"),
   btnRetryCamera: document.getElementById("btnRetryCamera"),
-  btnFallbackDemo: document.getElementById("btnFallbackDemo"),
+  btnFallbackNoCamera: document.getElementById("btnFallbackNoCamera"),
   errorMessage: document.getElementById("errorMessage"),
   progressFill: document.getElementById("progressFill"),
   progressLabel: document.getElementById("progressLabel"),
@@ -191,8 +191,8 @@ const dom = {
 
 const state = {
   screen: SCREENS.WELCOME,
-  cameraMode: "none", // none | camera | demo
-  preferredMode: "demo",
+  cameraMode: "none", // none | camera | no_camera
+  preferredMode: "no_camera",
   scanningStartedAt: 0,
   profileIndex: 0,
   lastLandmarks: null,
@@ -207,7 +207,7 @@ const state = {
   smoothedCenter: { x: 0, y: 0 },
   smoothedRadius: 0,
   hasSmoothed: false,
-  demoMaskPoints: null,
+  fallbackMaskPoints: null,
 };
 
 function setScreen(screen) {
@@ -340,8 +340,8 @@ function mulberry32(seed) {
   };
 }
 
-function getDemoMaskPoints() {
-  if (state.demoMaskPoints) return state.demoMaskPoints;
+function getFallbackMaskPoints() {
+  if (state.fallbackMaskPoints) return state.fallbackMaskPoints;
 
   const rand = mulberry32(43117);
   const points = [];
@@ -365,7 +365,7 @@ function getDemoMaskPoints() {
     points.push({ x, y });
   }
 
-  state.demoMaskPoints = points;
+  state.fallbackMaskPoints = points;
   return points;
 }
 
@@ -395,7 +395,7 @@ function drawFx(nowMs) {
     return;
   }
 
-  drawDemoMaskPoints(ctx, nowMs, center, radius);
+  drawFallbackMaskPoints(ctx, nowMs, center, radius);
 }
 
 function getFocusPoint(stage, mapFn) {
@@ -539,9 +539,9 @@ function drawFaceMaskPoints(ctx, nowMs, mapFn, center, radius, bounds) {
   ctx.restore();
 }
 
-function drawDemoMaskPoints(ctx, nowMs, center, radius) {
+function drawFallbackMaskPoints(ctx, nowMs, center, radius) {
   const sprite = getDotSprite();
-  const points = getDemoMaskPoints();
+  const points = getFallbackMaskPoints();
 
   const t = nowMs / 1000;
   const progress = clamp01((nowMs - state.scanningStartedAt) / ANALYSIS_DURATION_MS);
@@ -752,7 +752,7 @@ function stopVision() {
 async function startCameraAndVision() {
   if (typeof FaceMesh === "undefined" || typeof Camera === "undefined") {
     throw new Error(
-      "FaceMesh konnte nicht geladen werden (kein Internet?). Starte den Demo-Modus."
+      "FaceMesh konnte nicht geladen werden (kein Internet?). Starte ohne Kamera."
     );
   }
 
@@ -801,7 +801,7 @@ function beginScanning() {
   dom.scanHint.textContent =
     state.cameraMode === "camera"
       ? "Bitte schau in die Kamera und halte dein Gesicht im Sichtfeld."
-      : "Demo-Modus: Ablauf ist hardcodiert (ohne Kamera).";
+      : "Bitte positioniere dein Gesicht mittig und bleib still.";
 }
 
 function getScore(profile, keywords, fallbackIndex = 0) {
@@ -1060,21 +1060,21 @@ async function startPreferredScan() {
       return;
     } catch {
       stopVision();
-      state.cameraMode = "demo";
-      state.preferredMode = "demo";
+      state.cameraMode = "no_camera";
+      state.preferredMode = "no_camera";
     }
   }
 
   stopVision();
-  state.cameraMode = "demo";
+  state.cameraMode = "no_camera";
   beginScanning();
 }
 
 function initButtons() {
-  dom.btnStartDemo.addEventListener("click", () => {
+  dom.btnStartNoCamera.addEventListener("click", () => {
     stopVision();
-    state.cameraMode = "demo";
-    state.preferredMode = "demo";
+    state.cameraMode = "no_camera";
+    state.preferredMode = "no_camera";
     beginScanning();
   });
 
@@ -1116,10 +1116,10 @@ function initButtons() {
     }
   });
 
-  dom.btnFallbackDemo.addEventListener("click", () => {
+  dom.btnFallbackNoCamera.addEventListener("click", () => {
     stopVision();
-    state.cameraMode = "demo";
-    state.preferredMode = "demo";
+    state.cameraMode = "no_camera";
+    state.preferredMode = "no_camera";
     beginScanning();
   });
 }
